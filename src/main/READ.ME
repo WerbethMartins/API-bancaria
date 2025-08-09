@@ -1,0 +1,51 @@
+Projeto API Bancária
+- Usamos o Spring init para gerar o arquivo Spring boot
+    // Configurações //
+    - Project: Maven
+    - Spring Boot: 3.5.4
+    - Java: 23
+    // Dependências //
+    - Spring Web
+    - Spring Data JPA
+    - Lombok
+    - H2 Database (Inicial)
+    - Validation
+
+1. Configuração Inicial e Ferramentas
+    - Projeto estruturado com camadas: Controller, Service, Model, DTO, Exception e Repository
+    - Adicionado conexão com banco de dados
+    - Health Controller para testar se a API está funcionalidade.
+
+2. Modelagem das Entidades
+    - Criamos a entidade cliente
+        - Cliente coma atributos: id, nome, cpf, email
+        - Conta Bancaria com: id, numero, saldo, tipo de conta (Corrente, Poupança)
+    - Definido relação entre cliente e conta (@OneToMany, ManyToOne)
+
+3. DTOs para entrada e saída de dados
+    - Criamos:
+        - ClienteDTO para receber dados do cliente na requisição (com validações como @NotBlank, @Size, @Email).
+        - ClienteResponseDTO para enviar a resposta com dados do cliente, evitando expor a entidade completa.
+
+4. Lógica de Negócio no Service
+    - Criamos o ClienteService com métodos:
+        - criarCliente(ClienteDTO dto) que converte DTO em entidade, salva no banco e retorna ClienteResponseDTO.
+        - abrirContaCliente(Long clienteId, String tipoConta) que cria uma conta para o cliente, gera número automático, e salva.
+        - consultarSaldo(String numeroConta) que retorna o saldo da conta informada.
+        - listarClientes() para retornar todos os clientes.
+
+5. Endpoints REST no Controller
+    - POST /clientes → cria um cliente usando DTOs.
+    - POST /clientes/abrir-conta/{clienteId} → abre uma conta para cliente existente.
+    - GET /clientes/saldo/{numeroConta} → consulta saldo da conta.
+    - GET /clientes → lista todos os clientes.
+
+6. Validação e tratamento de dados
+    - Usamos validação com jakarta.validation nas classes DTO.
+    - Número da conta é gerado automaticamente no backend, garantindo unicidade e formato padrão.
+
+ Resumo de todo o projeto ate aqui.
+    - Separação clara entre camadas (Controller, Service, Repository).
+    - Uso de DTOs para proteger dados e validar entrada.
+    - Geração automática de números de conta para evitar conflito.
+    - Preparação para testes via Postman com exemplos de requisições e respostas.

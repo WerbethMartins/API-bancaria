@@ -1,7 +1,6 @@
 package com.banco.api_bancaria.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,8 +8,8 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@Data
-public class ContaDTO {
+@AllArgsConstructor
+public class ContaResponseDTO {
     private String numero;
     private BigDecimal saldo;
     private String tipo;
