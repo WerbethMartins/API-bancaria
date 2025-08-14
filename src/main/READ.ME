@@ -44,8 +44,30 @@ Projeto API Bancária
     - Usamos validação com jakarta.validation nas classes DTO.
     - Número da conta é gerado automaticamente no backend, garantindo unicidade e formato padrão.
 
+7. Criação de testes automatizados com JUnit e Mockito da API
+    - teste unitários para clienteService
+    - Aprendido a importância de teste em APIs críticas(como sistemas bancários)
+        - Garantir que os métodos funcionem corretamente
+        - Evitar inconsistência de dados, como saldo errado e cliente inexistente.
+        - Cobrir fluxos felizes quanto exceções
+    - Testes implementados:
+        - Criar clientes
+            - Verificar se o cliente é criado corretamente via DTO(ClienteResponseDTO)
+            - Confirmar se o repositório foi chamado(save)
+        - Abrir conta cliente
+            - Testa a criação de conta para cliente existente
+            - Verifica: tipo de conta, saldo inicial e geração do número da conta.
+            - Também criado testes em caso do cliente não existir
+        - Consultar o saldo
+            - Verifica se o saldo retornado é correto para uma conta existente.
+            - Testa exceção se a conta não existe
+        - Listar clientes
+            - Verifica se o metodo retorna corretamente uma lista de clientes do repositório
+            - Confirma a quantidade de clientes e dados corretos do DTO
+
  Resumo de todo o projeto ate aqui.
     - Separação clara entre camadas (Controller, Service, Repository).
     - Uso de DTOs para proteger dados e validar entrada.
     - Geração automática de números de conta para evitar conflito.
     - Preparação para testes via Postman com exemplos de requisições e respostas.
+    - Criado testes automatizados com JUnit e Mockito
