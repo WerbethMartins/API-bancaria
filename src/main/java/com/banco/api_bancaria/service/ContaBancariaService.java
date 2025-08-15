@@ -1,0 +1,133 @@
+package com.banco.api_bancaria.service;
+
+import com.banco.api_bancaria.dto.ClienteDTO;
+import com.banco.api_bancaria.model.Cliente;
+import com.banco.api_bancaria.model.ContaBancaria;
+import com.banco.api_bancaria.dto.ContaDTO;
+import com.banco.api_bancaria.dto.ContaResponseDTO;
+
+import com.banco.api_bancaria.repository.ClienteRepository;
+import com.banco.api_bancaria.repository.ContaBancariaRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class ContaBancariaService {
+
+    private final ClienteRepository clienteRepository;
+
+    public ContaBancariaService(ClienteRepository clienteRepository) {
+        this.clienteRepository = clienteRepository;
+    }
+
+    public void depositar(String numeroConta, BigDecimal valor){
+        if(valor.compareTo(BigDecimal.ZERO) <= 0){
+            throw new IllegalArgumentException("O valor do déposito deve ser maior que zero");
+        }
+
+        // Busca o cliente que possui essa conta
+        Cliente cliente = clienteRepository.findAll()
+                .stream()
+                .filter(c -> c.getContas()
+                        .stream()
+                        .anyMatch(conta -> conta.getNumero().equals(numeroConta)))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada!"));
+
+        // Localiza a conta e adiciona o valor
+        ContaBancaria conta = cliente.getContas()
+                .stream()
+                .filter(c -> c.getNumero().equals(numeroConta))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada!"));
+
+        conta.setSaldo(conta.getSaldo().add(valor));
+
+        clienteRepository.save(cliente);
+    }
+
+    public void sacar(String numeroConta, BigDecimal valor){
+        if(valor.compareTo(BigDecimal.ZERO) <= 0){
+            throw new IllegalArgumentException("O valor deve ser maior que zero!");
+        }
+
+        Cliente cliente = clienteRepository.findAll()
+                .stream()
+                .filter(c -> c.getContas()
+                        .stream()
+                        .anyMatch(conta -> conta.getNumero().equals(numeroConta)))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada!"));
+
+        ContaBancaria conta = cliente.getContas()
+                .stream()
+                .filter(c -> c.getNumero().equals(numeroConta))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Contra não encontrada!"));
+
+        // Verifica o saldo
+        if(conta.getSaldo().compareTo(valor) < 0){
+            throw  new IllegalArgumentException("Saldo insuficiente para realizar o saque!");
+        }
+
+        // Realiza o saque
+        conta.setSaldo(conta.getSaldo().subtract(valor));
+
+        clienteRepository.save(cliente);
+    }
+
+    public void transferir(String numeroContaOrigem, String numeroContaDestino, BigDecimal valor){
+        if(valor.compareTo(BigDecimal.ZERO) <= 0){
+            throw  new IllegalArgumentException("O valor para transferir deve ser maior que zero");
+        }
+
+        if(numeroContaOrigem.equals(numeroContaDestino)){
+            throw new IllegalArgumentException("A conta de origem e destino devem ser diferentes.");
+        }
+
+        Cliente clienteOrigem = clienteRepository.findAll()
+                .stream()
+                .filter(co -> co.getContas()
+                        .stream()
+                        .anyMatch(conta -> conta.getNumero().equals(numeroContaOrigem)))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
+
+        Cliente clienteDestino = clienteRepository.findAll()
+                .stream()
+                .filter(cd -> cd.getContas()
+                        .stream()
+                        .anyMatch(contaDestino -> contaDestino.getNumero().equals(numeroContaDestino)))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Conta não econtrada!"));
+
+        ContaBancaria contaOrigem = clienteOrigem.getContas()
+                .stream()
+                .filter(co -> co.getNumero().equals(numeroContaOrigem))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Conta de origem não encontrada!"));
+
+        ContaBancaria contaDestino = clienteDestino.getContas()
+                .stream()
+                .filter(cd -> cd.getNumero().equals(numeroContaDestino))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Conta de destino não encontrada!"));
+
+        // Verifica se o saldo é positivo
+        if(contaOrigem.getSaldo().compareTo(valor) < 0){
+            throw new IllegalArgumentException("Saldo insuficiente para realizar a transferência");
+        }
+
+        // Realiza a transferência
+        contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valor));
+        contaDestino.setSaldo(contaDestino.getSaldo().add(valor));
+
+        clienteRepository.save(clienteOrigem);
+        clienteRepository.save(clienteDestino);
+    }
+}

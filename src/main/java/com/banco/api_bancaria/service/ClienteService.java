@@ -1,13 +1,12 @@
 package com.banco.api_bancaria.service;
 
-import ch.qos.logback.core.net.server.Client;
 import com.banco.api_bancaria.dto.ClienteDTO;
 import com.banco.api_bancaria.dto.ClienteResponseDTO;
 import com.banco.api_bancaria.dto.ContaResponseDTO;
 import com.banco.api_bancaria.model.Cliente;
 import com.banco.api_bancaria.model.ContaBancaria;
 import com.banco.api_bancaria.repository.ClienteRepository;
-import com.banco.api_bancaria.repository.ContaBancariaRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;

@@ -26,7 +26,7 @@ public class ClientServiceTest {
 
     @InjectMocks
     private ClienteService clienteService;
-    private ClienteResponseDTO clienteServiceDTO;
+    private ClienteResponseDTO clienteResponseDTO;
 
     @BeforeEach
     void setUp(){
@@ -97,6 +97,31 @@ public class ClientServiceTest {
         assertThrows(EntityNotFoundException.class, () -> {
             clienteService.abrirContaCliente(1L, "Poupação");
         });
+    }
+
+    @Test
+    void develancarExcecaoQuandoCpfJaExistir(){
+        // Arrange
+        ClienteDTO dto = new ClienteDTO();
+        dto.setNome("Maria");
+        dto.setCpf("12345678900");
+        dto.setEmail("maria@email.com");
+
+        Cliente clienteExistente = new Cliente();
+        clienteExistente.setId(1L);
+        clienteExistente.setNome("Maria");
+        clienteExistente.setCpf("12345678900");
+
+        when(clienteRepository.findByCpf("12345678900"))
+                .thenReturn(Optional.of(clienteExistente));
+
+        // Act & Assert
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            clienteService.criarCliente(dto);
+        });
+
+        assertEquals("Já existe um cliente com esse cpf.", ex.getLocalizedMessage());
+        verify(clienteRepository, never()).save(any()); // Garante que não salvou
     }
 
     @Test
