@@ -1,6 +1,7 @@
 package com.banco.api_bancaria.service;
 
 import com.banco.api_bancaria.dto.ClienteDTO;
+import com.banco.api_bancaria.dto.ClienteResponseDTO;
 import com.banco.api_bancaria.model.Cliente;
 import com.banco.api_bancaria.model.ContaBancaria;
 import com.banco.api_bancaria.dto.ContaDTO;
@@ -25,7 +26,7 @@ public class ContaBancariaService {
         this.clienteRepository = clienteRepository;
     }
 
-    public void depositar(String numeroConta, BigDecimal valor){
+    public ContaBancaria depositar(String numeroConta, BigDecimal valor){
         if(valor.compareTo(BigDecimal.ZERO) <= 0){
             throw new IllegalArgumentException("O valor do déposito deve ser maior que zero");
         }
@@ -49,9 +50,11 @@ public class ContaBancariaService {
         conta.setSaldo(conta.getSaldo().add(valor));
 
         clienteRepository.save(cliente);
+
+        return conta;
     }
 
-    public void sacar(String numeroConta, BigDecimal valor){
+    public ContaBancaria sacar(String numeroConta, BigDecimal valor){
         if(valor.compareTo(BigDecimal.ZERO) <= 0){
             throw new IllegalArgumentException("O valor deve ser maior que zero!");
         }
@@ -79,9 +82,11 @@ public class ContaBancariaService {
         conta.setSaldo(conta.getSaldo().subtract(valor));
 
         clienteRepository.save(cliente);
+
+        return conta;
     }
 
-    public void transferir(String numeroContaOrigem, String numeroContaDestino, BigDecimal valor){
+    public ContaBancaria transferir(String numeroContaOrigem, String numeroContaDestino, BigDecimal valor){
         if(valor.compareTo(BigDecimal.ZERO) <= 0){
             throw  new IllegalArgumentException("O valor para transferir deve ser maior que zero");
         }
@@ -129,5 +134,7 @@ public class ContaBancariaService {
 
         clienteRepository.save(clienteOrigem);
         clienteRepository.save(clienteDestino);
+
+        return contaOrigem;
     }
 }
