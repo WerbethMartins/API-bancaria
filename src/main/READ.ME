@@ -79,9 +79,12 @@ Projeto API Bancária
     Seguindo as mesmas práticas e conceitos do testes criados para a class clienteService.
 
 9. Criado a classe contaBancariaController para a criação dos endpoints: Depositar, Sacar e transferir.
-Criado as classes OperacaoDTO e TransferenciaDTO, refatorado os metodos da classe contaBancariaService,
-para retorna as classe DTO, feito alguns testes no postman.
+    - Criado as classes OperacaoDTO e TransferenciaDTO, refatorado os metodos da classe contaBancariaService,
+    para retorna as classe DTO, feito alguns testes no postman.
 
+10. Criado a classe TransferênciaResponseDTO para saída de informações da classe TransferênciaDTO,
+    - Refatorádo o metodo de transferência na classe de serviço e controle.
+    - Refatorádo os testes unitários usando a classe TransferênciaResponseDTO e TransferênciaDTO.
 
  Resumo de todo o projeto ate aqui.
     - Separação clara entre camadas (Controller, Service, Repository).
@@ -89,3 +92,4 @@ para retorna as classe DTO, feito alguns testes no postman.
     - Geração automática de números de conta para evitar conflito.
     - Preparação para testes via Postman com exemplos de requisições e respostas.
     - Criado testes automatizados com JUnit e Mockito
+    - Criado classes dto para o metodo de transferência.

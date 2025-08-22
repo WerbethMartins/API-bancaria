@@ -1,11 +1,8 @@
 package com.banco.api_bancaria.service;
 
-import com.banco.api_bancaria.dto.ClienteDTO;
-import com.banco.api_bancaria.dto.ClienteResponseDTO;
+import com.banco.api_bancaria.dto.*;
 import com.banco.api_bancaria.model.Cliente;
 import com.banco.api_bancaria.model.ContaBancaria;
-import com.banco.api_bancaria.dto.ContaDTO;
-import com.banco.api_bancaria.dto.ContaResponseDTO;
 
 import com.banco.api_bancaria.repository.ClienteRepository;
 import com.banco.api_bancaria.repository.ContaBancariaRepository;
@@ -86,55 +83,60 @@ public class ContaBancariaService {
         return conta;
     }
 
-    public ContaBancaria transferir(String numeroContaOrigem, String numeroContaDestino, BigDecimal valor){
+    public TransferenciaResponseDTO transferir(TransferenciaDTO dto){
+        BigDecimal valor = dto.getValor();
         if(valor.compareTo(BigDecimal.ZERO) <= 0){
             throw  new IllegalArgumentException("O valor para transferir deve ser maior que zero");
         }
 
-        if(numeroContaOrigem.equals(numeroContaDestino)){
-            throw new IllegalArgumentException("A conta de origem e destino devem ser diferentes.");
+        if(dto.getNumeroContaOrigem() != null){
+            if(dto.getNumeroContaOrigem().equals(dto.getNumeroContaDestino())){
+                throw new IllegalArgumentException("A conta de origem e destino devem ser diferentes.");
+            }
+
+            Cliente clienteOrigem = clienteRepository.findAll()
+                    .stream()
+                    .filter(co -> co.getContas()
+                            .stream()
+                            .anyMatch(conta -> conta.getNumero().equals(dto.getNumeroContaOrigem())))
+                    .findFirst()
+                    .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
+
+            Cliente clienteDestino = clienteRepository.findAll()
+                    .stream()
+                    .filter(cd -> cd.getContas()
+                            .stream()
+                            .anyMatch(contaDestino -> contaDestino.getNumero().equals(dto.getNumeroContaDestino())))
+                    .findFirst()
+                    .orElseThrow(() -> new EntityNotFoundException("Conta não econtrada!"));
+
+            ContaBancaria contaOrigem = clienteOrigem.getContas()
+                    .stream()
+                    .filter(co -> co.getNumero().equals(dto.getNumeroContaOrigem()))
+                    .findFirst()
+                    .orElseThrow(() -> new EntityNotFoundException("Conta de origem não encontrada!"));
+
+            ContaBancaria contaDestino = clienteDestino.getContas()
+                    .stream()
+                    .filter(cd -> cd.getNumero().equals(dto.getNumeroContaDestino()))
+                    .findFirst()
+                    .orElseThrow(() -> new EntityNotFoundException("Conta de destino não encontrada!"));
+
+            // Verifica se o saldo é positivo
+            if(contaOrigem.getSaldo().compareTo(valor) < 0){
+                throw new IllegalArgumentException("Saldo insuficiente para realizar a transferência");
+            }
+
+            // Realiza a transferência
+            contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valor));
+            contaDestino.setSaldo(contaDestino.getSaldo().add(valor));
+
+            clienteRepository.save(clienteOrigem);
+            clienteRepository.save(clienteDestino);
+
+            return new TransferenciaResponseDTO(contaOrigem, contaDestino, valor);
         }
 
-        Cliente clienteOrigem = clienteRepository.findAll()
-                .stream()
-                .filter(co -> co.getContas()
-                        .stream()
-                        .anyMatch(conta -> conta.getNumero().equals(numeroContaOrigem)))
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada"));
-
-        Cliente clienteDestino = clienteRepository.findAll()
-                .stream()
-                .filter(cd -> cd.getContas()
-                        .stream()
-                        .anyMatch(contaDestino -> contaDestino.getNumero().equals(numeroContaDestino)))
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Conta não econtrada!"));
-
-        ContaBancaria contaOrigem = clienteOrigem.getContas()
-                .stream()
-                .filter(co -> co.getNumero().equals(numeroContaOrigem))
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Conta de origem não encontrada!"));
-
-        ContaBancaria contaDestino = clienteDestino.getContas()
-                .stream()
-                .filter(cd -> cd.getNumero().equals(numeroContaDestino))
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Conta de destino não encontrada!"));
-
-        // Verifica se o saldo é positivo
-        if(contaOrigem.getSaldo().compareTo(valor) < 0){
-            throw new IllegalArgumentException("Saldo insuficiente para realizar a transferência");
-        }
-
-        // Realiza a transferência
-        contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valor));
-        contaDestino.setSaldo(contaDestino.getSaldo().add(valor));
-
-        clienteRepository.save(clienteOrigem);
-        clienteRepository.save(clienteDestino);
-
-        return contaOrigem;
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package com.banco.api_bancaria.service;
 
+import com.banco.api_bancaria.dto.TransferenciaDTO;
+import com.banco.api_bancaria.dto.TransferenciaResponseDTO;
 import com.banco.api_bancaria.model.Cliente;
 import com.banco.api_bancaria.model.ContaBancaria;
 import com.banco.api_bancaria.repository.ClienteRepository;
@@ -186,9 +188,16 @@ public class ContaBancariaServiceTest {
         when(clienteRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        contaService.transferir("111111", "222222", new BigDecimal("300"));
+        TransferenciaDTO dto = new TransferenciaDTO();
+        dto.setNumeroContaDestino("111111");
+        dto.setNumeroContaOrigem("222222");
+        dto.setValor(new BigDecimal("300"));
+
+        TransferenciaResponseDTO responseDTO = contaService.transferir(dto);
 
         // Assert
+        assertEquals(new BigDecimal("700"), responseDTO.getSaldoContaOrigem());
+        assertEquals(new BigDecimal("800"), responseDTO.getSaldoContaDestino());
         assertEquals(new BigDecimal("700"), contaOrigem.getSaldo());
         assertEquals(new BigDecimal("800"), contaDestino.getSaldo());
         verify(clienteRepository, times(2)).save(any());
@@ -216,26 +225,33 @@ public class ContaBancariaServiceTest {
 
         when(clienteRepository.findAll()).thenReturn(List.of(clienteOrigem, clienteDestino));
 
-        // Transferência zero
-        IllegalArgumentException ex1 = assertThrows(IllegalArgumentException.class, () -> {
-           contaService.transferir("111111", "222222", BigDecimal.ZERO);
-        });
+        TransferenciaDTO dto = new TransferenciaDTO();
+        dto.setNumeroContaOrigem("111111");
+        dto.setNumeroContaDestino("222222");
+        dto.setValor(BigDecimal.ZERO);
 
+        // Transferência zero
+        IllegalArgumentException ex1 = assertThrows(IllegalArgumentException.class, () -> contaService.transferir(dto));
         assertEquals("O valor deve ser maior que zero para realizar a transferência", ex1.getMessage());
 
+        TransferenciaDTO dtoNeg = new TransferenciaDTO();
+        dtoNeg.setNumeroContaOrigem("111111");
+        dtoNeg.setNumeroContaDestino("222222");
+        dtoNeg.setValor(new BigDecimal("-200"));
+
         // Transferência negativa
-        IllegalArgumentException ex2 = assertThrows(IllegalArgumentException.class, () -> {
-           contaService.transferir("111111", "222222", BigDecimal.valueOf(-200));
-        });
+        IllegalArgumentException ex2 = assertThrows(IllegalArgumentException.class, () -> contaService.transferir(dtoNeg));
+        assertEquals("O valor deve ser maior que zero para realizare a transferência", ex2.getMessage());
 
         assertEquals("O valor deve ser maior que zero para realizar a transferência", ex2.getMessage());
     }
 
     @Test
     void deveLancarExcecaoQuandoContasForemIguais() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            contaService.transferir("111111", "111111", new BigDecimal("100"));
-        });
+        TransferenciaDTO dto = new TransferenciaDTO();
+        dto.setNumeroContaOrigem("111111");
+        dto.setNumeroContaDestino("111111");
+        dto.setValor(new BigDecimal("100"));
     }
 
     @Test
@@ -260,18 +276,25 @@ public class ContaBancariaServiceTest {
 
         when(clienteRepository.findAll()).thenReturn(List.of(clienteOrigem, clienteDestino));
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
-            contaService.transferir("111111", "222222", new BigDecimal("500"));
-        });
+        TransferenciaDTO dto = new TransferenciaDTO();
+        dto.setNumeroContaOrigem("111111");
+        dto.setNumeroContaDestino("222222");
+        dto.setValor(new BigDecimal("500"));
 
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> contaService.transferir(dto));
         assertEquals("Saldo insuficiente para realizar a transferência", ex.getMessage());
     }
 
     @Test
     void deveLancarExcecaoQuandoContaNaoExistirNaTransferencia() {
         when(clienteRepository.findAll()).thenReturn(new ArrayList<>());
-        assertThrows(EntityNotFoundException.class, () ->
-                contaService.transferir("999999", "888888", BigDecimal.valueOf(100)));
+
+        TransferenciaDTO dto = new TransferenciaDTO();
+        dto.setNumeroContaOrigem("999999");
+        dto.setNumeroContaDestino("888888");
+        dto.setValor(new BigDecimal("100"));
+
+        assertThrows(EntityNotFoundException.class, () -> contaService.transferir(dto));
     }
 
 

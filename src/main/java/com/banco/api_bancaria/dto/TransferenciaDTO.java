@@ -3,24 +3,24 @@ package com.banco.api_bancaria.dto;
 import java.math.BigDecimal;
 
 public class TransferenciaDTO {
-    private String contaOrigem;
-    private String contaDestino;
+    private String numeroContaOrigem;
+    private String numeroContaDestino;
     private BigDecimal valor;
 
-    public String getContaOrigem() {
-        return contaOrigem;
+    public String getNumeroContaOrigem() {
+        return numeroContaOrigem;
     }
 
-    public void setContaOrigem(String contaOrigem) {
-        this.contaOrigem = contaOrigem;
+    public void setNumeroContaOrigem(String numeroContaOrigem) {
+        this.numeroContaOrigem = numeroContaOrigem;
     }
 
-    public String getContaDestino() {
-        return contaDestino;
+    public String getNumeroContaDestino() {
+        return numeroContaDestino;
     }
 
-    public void setContaDestino(String contaDestino) {
-        this.contaDestino = contaDestino;
+    public void setNumeroContaDestino(String numeroContaDestino) {
+        this.numeroContaDestino = numeroContaDestino;
     }
 
     public BigDecimal getValor() {
