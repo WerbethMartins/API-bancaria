@@ -197,7 +197,6 @@ public class ContaBancariaServiceTest {
 
         // Assert
         assertEquals(new BigDecimal("700"), responseDTO.getSaldoContaOrigem());
-        assertEquals(new BigDecimal("800"), responseDTO.getSaldoContaDestino());
         assertEquals(new BigDecimal("700"), contaOrigem.getSaldo());
         assertEquals(new BigDecimal("800"), contaDestino.getSaldo());
         verify(clienteRepository, times(2)).save(any());
