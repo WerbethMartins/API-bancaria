@@ -1,16 +1,21 @@
 package com.banco.api_bancaria.service;
 
 import com.banco.api_bancaria.dto.*;
+import com.banco.api_bancaria.enums.TipoTransacao;
 import com.banco.api_bancaria.model.Cliente;
 import com.banco.api_bancaria.model.ContaBancaria;
 
+import com.banco.api_bancaria.model.Transacao;
 import com.banco.api_bancaria.repository.ClienteRepository;
 import com.banco.api_bancaria.repository.ContaBancariaRepository;
+import com.banco.api_bancaria.repository.TransacaoRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,9 +23,11 @@ import java.util.stream.Collectors;
 public class ContaBancariaService {
 
     private final ClienteRepository clienteRepository;
+    private final TransacaoRepository transacaoRepository;
 
-    public ContaBancariaService(ClienteRepository clienteRepository) {
+    public ContaBancariaService(ClienteRepository clienteRepository, TransacaoRepository transacaoRepository) {
         this.clienteRepository = clienteRepository;
+        this.transacaoRepository = transacaoRepository;
     }
 
     public ContaBancaria depositar(String numeroConta, BigDecimal valor){
@@ -46,7 +53,14 @@ public class ContaBancariaService {
 
         conta.setSaldo(conta.getSaldo().add(valor));
 
-        clienteRepository.save(cliente);
+        Transacao transacao = new Transacao(
+            TipoTransacao.DEPOSITO,
+            valor,
+            null,
+            conta
+        );
+
+        transacaoRepository.save(transacao);
 
         return conta;
     }
@@ -78,12 +92,21 @@ public class ContaBancariaService {
         // Realiza o saque
         conta.setSaldo(conta.getSaldo().subtract(valor));
 
-        clienteRepository.save(cliente);
+        Transacao transacao = new Transacao(
+           TipoTransacao.SAQUE,
+           valor,
+           null,
+           conta
+        );
+
+        transacaoRepository.save(transacao);
 
         return conta;
     }
 
+    @Transactional
     public TransferenciaResponseDTO transferir(TransferenciaDTO dto){
+
         BigDecimal valor = dto.getValor();
         if(valor.compareTo(BigDecimal.ZERO) <= 0){
             throw  new IllegalArgumentException("O valor para transferir deve ser maior que zero");
@@ -131,12 +154,25 @@ public class ContaBancariaService {
             contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valor));
             contaDestino.setSaldo(contaDestino.getSaldo().add(valor));
 
-            clienteRepository.save(clienteOrigem);
-            clienteRepository.save(clienteDestino);
+            Transacao transacao = new Transacao(
+                    TipoTransacao.TRANSFERENCIA,
+                    valor,
+                    contaOrigem,
+                    contaDestino
+            );
+
+            transacaoRepository.save(transacao);
 
             return new TransferenciaResponseDTO(contaOrigem, contaDestino, valor);
         }
 
         return null;
+    }
+
+    public List<Transacao> consultarExtrato(String numeroConta){
+        return transacaoRepository.findByContaOrigem_NumeroOrContaDestino_Numero(numeroConta, numeroConta)
+                .stream()
+                .filter(transacao -> transacao.getContaOrigem() != null && transacao.getContaDestino() != null)
+                .toList();
     }
 }

@@ -93,10 +93,23 @@ Projeto API Bancária
     - handlerGeneric
     Implementados teste unitarios para as exceções.
 
- Resumo de todo o projeto ate aqui.
+12. Criado classe de entidade Transacao, para mostrar dados de saída de cada operação, com atributos:
+        tipoTransação classe Enum,
+        valor,
+        data e hora,
+        contaDestino e contaOrigem
+    Criado a classe dto ExtraDTO.
+    Criado o repositorio, TransacaoRepository.
+    Criado a classe de controle, TransacaoController, com o endpoint de extrato:
+        consultarExtrato.
+    Refatorado a classe de serviço, contaBancariaService, para retorna os extratos para cada operação.
+    Criado o metodo para consultar o extrato na classe
+
+ Resumo de todo o projeto até aqui.
     - Separação clara entre camadas (Controller, Service, Repository).
     - Uso de DTOs para proteger dados e validar entrada.
     - Geração automática de números de conta para evitar conflito.
     - Preparação para testes via Postman com exemplos de requisições e respostas.
     - Criado testes automatizados com JUnit e Mockito
     - Criado classes dto para o metodo de transferência.
+    - Criado classe para extratos de cada operação da conta.

@@ -6,6 +6,7 @@ import com.banco.api_bancaria.dto.TransferenciaDTO;
 import com.banco.api_bancaria.dto.TransferenciaResponseDTO;
 import com.banco.api_bancaria.model.ContaBancaria;
 
+import com.banco.api_bancaria.model.Transacao;
 import com.banco.api_bancaria.service.ContaBancariaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,4 +57,5 @@ public class ContaBancariaController {
 
         return ResponseEntity.ok(response);
     }
+
 }
