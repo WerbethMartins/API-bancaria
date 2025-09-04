@@ -1,6 +1,7 @@
 package com.banco.api_bancaria.service;
 
 import com.banco.api_bancaria.dto.*;
+import com.banco.api_bancaria.enums.MovimentoTransacao;
 import com.banco.api_bancaria.enums.TipoTransacao;
 import com.banco.api_bancaria.model.Cliente;
 import com.banco.api_bancaria.model.ContaBancaria;
@@ -56,8 +57,9 @@ public class ContaBancariaService {
         Transacao transacao = new Transacao(
             TipoTransacao.DEPOSITO,
             valor,
-            null,
-            conta
+            MovimentoTransacao.ENTRADA,
+            conta,
+        null
         );
 
         transacaoRepository.save(transacao);
@@ -95,8 +97,9 @@ public class ContaBancariaService {
         Transacao transacao = new Transacao(
            TipoTransacao.SAQUE,
            valor,
-           null,
-           conta
+            MovimentoTransacao.SAIDA,
+           conta,
+        null
         );
 
         transacaoRepository.save(transacao);
@@ -154,14 +157,24 @@ public class ContaBancariaService {
             contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valor));
             contaDestino.setSaldo(contaDestino.getSaldo().add(valor));
 
-            Transacao transacao = new Transacao(
+            Transacao transacaoOrigem = new Transacao(
                     TipoTransacao.TRANSFERENCIA,
                     valor,
+                    MovimentoTransacao.SAIDA,
                     contaOrigem,
                     contaDestino
             );
 
-            transacaoRepository.save(transacao);
+            Transacao transacaoDestino = new Transacao(
+                    TipoTransacao.TRANSFERENCIA,
+                    valor,
+                    MovimentoTransacao.ENTRADA,
+                    contaOrigem,
+                    contaDestino
+            );
+
+            transacaoRepository.save(transacaoOrigem);
+            transacaoRepository.save(transacaoDestino);
 
             return new TransferenciaResponseDTO(contaOrigem, contaDestino, valor);
         }

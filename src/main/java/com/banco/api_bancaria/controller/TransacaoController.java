@@ -1,5 +1,6 @@
 package com.banco.api_bancaria.controller;
 
+import com.banco.api_bancaria.dto.ExtratoCompactoDTO;
 import com.banco.api_bancaria.dto.ExtratoDTO;
 import com.banco.api_bancaria.model.Transacao;
 import com.banco.api_bancaria.service.ContaBancariaService;
@@ -30,5 +31,14 @@ public class TransacaoController {
                 .map(ExtratoDTO::fromEntity)
                 .toList();
         return ResponseEntity.ok(extrato);
+    }
+
+    @GetMapping("/{numeroConta}/extrato/compacto")
+    public ResponseEntity<List<ExtratoCompactoDTO>> consultarExtratoCompacto(@PathVariable String numeroConta){
+        List<ExtratoCompactoDTO> extraCompacto = contaBancariaService.consultarExtrato(numeroConta)
+                .stream()
+                .map(transacao -> ExtratoCompactoDTO.fromEntity(transacao, numeroConta))
+                .toList();
+        return ResponseEntity.ok(extraCompacto);
     }
 }

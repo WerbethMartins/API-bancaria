@@ -1,5 +1,6 @@
 package com.banco.api_bancaria.model;
 
+import com.banco.api_bancaria.enums.MovimentoTransacao;
 import com.banco.api_bancaria.enums.TipoTransacao;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -18,26 +19,31 @@ import java.time.LocalDateTime;
 public class Transacao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Long id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     private TipoTransacao tipo;
 
     private BigDecimal valor;
 
-    @JsonFormat(pattern = "yyyy-MM-dd:T:HH:mm:ss" )
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss" )
     private LocalDateTime dataHora;
 
+    @Enumerated(EnumType.STRING)
+    private MovimentoTransacao movimento;
+
     @ManyToOne
+    @JoinColumn(name = "conta_origem_id")
     private ContaBancaria contaOrigem;
 
     @ManyToOne
     @JoinColumn(name = "conta_destino_id")
     private ContaBancaria contaDestino;
 
-    public Transacao(TipoTransacao tipo, BigDecimal valor, ContaBancaria contaOrigem, ContaBancaria contaDestino) {
+    public Transacao(TipoTransacao tipo, BigDecimal valor, MovimentoTransacao movimento,ContaBancaria contaOrigem, ContaBancaria contaDestino) {
         this.tipo = tipo;
         this.valor = valor;
+        this.movimento = movimento;
         this.contaOrigem = contaOrigem;
         this.contaDestino = contaDestino;
         this.dataHora = LocalDateTime.now();

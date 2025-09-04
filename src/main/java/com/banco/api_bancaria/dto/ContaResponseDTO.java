@@ -1,5 +1,6 @@
 package com.banco.api_bancaria.dto;
 
+import com.banco.api_bancaria.enums.MovimentoTransacao;
 import com.banco.api_bancaria.model.ContaBancaria;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
