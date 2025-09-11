@@ -1,4 +1,4 @@
-package com.banco.api_bancaria.security;
+package com.banco.api_bancaria.component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

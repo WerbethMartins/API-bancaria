@@ -1,6 +1,5 @@
-package com.banco.api_bancaria.security;
+package com.banco.api_bancaria.component;
 
-import ch.qos.logback.core.util.StringUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;

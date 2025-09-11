@@ -109,6 +109,13 @@ Projeto API Bancária
     depositar e trânsferir, para a saída do metodo, criado a classe enum MovimentoTransacao, que contém SAIDA e ENTRADA
     como atributos, criado o diretório security, para autenticação e validação do usuário.
 
+14. Criado autenticação de usuário, classes de segurança e criptografia de senha.
+    Classe entidade usuário;
+    Classe UserDetailsService;
+    Classe UsuarioRepository;
+    Criado classes dtos, JwtResponse e LoginRequestDTO;
+    Criado endpoint para login;
+
  Resumo de todo o projeto até aqui.
     - Separação clara entre camadas (Controller, Service, Repository).
     - Uso de DTOs para proteger dados e validar entrada.
@@ -117,3 +124,4 @@ Projeto API Bancária
     - Criado testes automatizados com JUnit e Mockito
     - Criado classes dto para o metodo de transferência.
     - Criado classe para extratos de cada operação da conta.
+    - Criado classe para extrato simples e classe enum da movimentação das transações.
