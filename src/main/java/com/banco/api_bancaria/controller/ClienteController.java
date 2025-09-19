@@ -1,10 +1,7 @@
 package com.banco.api_bancaria.controller;
 
-import com.banco.api_bancaria.dto.ClienteDTO;
+import com.banco.api_bancaria.dto.modelDTO.ClienteDTO;
 import com.banco.api_bancaria.dto.ClienteResponseDTO;
-import com.banco.api_bancaria.model.Cliente;
-import com.banco.api_bancaria.model.ContaBancaria;
-import com.banco.api_bancaria.repository.ClienteRepository;
 import com.banco.api_bancaria.service.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

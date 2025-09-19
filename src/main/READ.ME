@@ -116,6 +116,14 @@ Projeto API Bancária
     Criado classes dtos, JwtResponse e LoginRequestDTO;
     Criado endpoint para login;
 
+15. Refatorado classe SecurityConfig e criado um sistema de dashboard
+    Criado a classe UsuarioDTO para retornar dados ao dashboard.
+    Criado endpoints de listaUsuario, BuscarUsuario, AtualizarUsuario, DeletarUsuario, Promover e Rebaixar.
+    Feito testes no postman:
+        Testes de login de usuário.
+        Testes de registro de usuário.
+        Autenticação e permisão de acesso aos endpoints
+
  Resumo de todo o projeto até aqui.
     - Separação clara entre camadas (Controller, Service, Repository).
     - Uso de DTOs para proteger dados e validar entrada.
@@ -125,3 +133,7 @@ Projeto API Bancária
     - Criado classes dto para o metodo de transferência.
     - Criado classe para extratos de cada operação da conta.
     - Criado classe para extrato simples e classe enum da movimentação das transações.
+    - Criado classes para autenticação de usuário.
+    - Criado sistema de dashboard, refatorado a classe SecurityConfig para melhorar a autenticação e acesso dos usuários
+        criado endpoints para a classe DashboardController
+

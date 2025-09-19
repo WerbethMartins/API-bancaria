@@ -1,4 +1,4 @@
-package com.banco.api_bancaria.dto;
+package com.banco.api_bancaria.dto.modelDTO;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

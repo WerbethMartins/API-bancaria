@@ -1,6 +1,6 @@
 package com.banco.api_bancaria.service;
 
-import com.banco.api_bancaria.dto.ClienteDTO;
+import com.banco.api_bancaria.dto.modelDTO.ClienteDTO;
 import com.banco.api_bancaria.dto.ClienteResponseDTO;
 import com.banco.api_bancaria.dto.ContaResponseDTO;
 import com.banco.api_bancaria.model.Cliente;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
